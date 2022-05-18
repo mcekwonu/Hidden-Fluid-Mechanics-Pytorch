@@ -16,8 +16,6 @@ Plots of comparison can be found  as .png and gifs inbuilt the HFM class.
 
 # References:
 
- - Raissi, Maziar and Karniadakis, George Em, Hidden Physics Models: Machine Learning of Nonlinear Partial Differential Equations,
-  arXiv preprint arXiv:1708.00588, 2017
-  
- - Raissi, Maziar and Karniadakis, George Em, Hidden physics models: Machine learning of nonlinear partial differential equations, 
- Journal of Computational Physics, 2017, Elsevier.
+- Raissi, Maziar, and George Em Karniadakis. "Hidden Physics Models: Machine Learning of Nonlinear Partial Differential Equations." arXiv preprint arXiv:1708.00588 (2017).
+
+- Raissi, Maziar, and George Em Karniadakis. "Hidden physics models: Machine learning of nonlinear partial differential equations." Journal of Computational Physics 357 (2018): 125-141.
