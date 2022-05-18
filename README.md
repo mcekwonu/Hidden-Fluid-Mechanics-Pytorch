@@ -10,7 +10,7 @@ The sine activation function ws implemented with option of use of tanh activatio
 
 Sparse spatio and temporal data training are implemented respectively.
 
-
+[![watch video] (https://github.com/mcekwonu/Hidden-Fluids-Mechanics-Pytorch/blob/master/Animation/u_compared.gif)]
 
 # References:
 
