@@ -10,10 +10,9 @@ The sine activation function ws implemented with option of use of tanh activatio
 
 Sparse spatio and temporal data training are implemented respectively.
 
-![u_compared](https://user-images.githubusercontent.com/17880412/168983735-c5398ab8-840f-4050-8a47-b0e98ef40641.gif)
+![u_compared](https://user-images.githubusercontent.com/17880412/168983735-c5398ab8-840f-4050-8a47-b0e98ef40641.gif)  ![v_compared](https://user-images.githubusercontent.com/17880412/168983837-cbb87af0-a7ab-48b4-b8f2-619308fb9e16.gif)
 
 # References:
-
 - Raissi, Maziar, and George Em Karniadakis. "Hidden Physics Models: Machine Learning of Nonlinear Partial Differential Equations." arXiv preprint arXiv:1708.00588 (2017).
 
 - Raissi, Maziar, and George Em Karniadakis. "Hidden physics models: Machine learning of nonlinear partial differential equations." Journal of Computational Physics 357 (2018): 125-141.
