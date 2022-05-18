@@ -1,5 +1,5 @@
 # Hidden-Fluids-Mechanics-Pytorch
-I have translated the original code of Hidden Fluids Models in PyTorch and trained the codes with data (cylinder_nektar_wake.mat) and achieved the same results as obtained by Raissi et al (reference). 
+Original codes of Hidden Fluids Models in PyTorch and trained the codes with data (cylinder_nektar_wake.mat) of Raissi et al (reference). 
 
 Three variants of neural networks: 
 - "vanilla" - plain MLP, 
