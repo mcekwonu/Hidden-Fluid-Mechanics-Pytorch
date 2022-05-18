@@ -423,9 +423,3 @@ class DenseResNet(nn.Module):
         num_layers = len(list(self.parameters()))
         print(f"\nNumber of layers: {num_layers}\n"
               f"Number of trainable parameters: {num_learnable_params}")
-
-
-if __name__ == "__main__":
-    data_path = "../data/cylinder_wake.mat"
-    portion = 0.05
-    x_train, y_train, t_train, u_train, v_train, minmax_train = read_data_portion(data_path, portion)
