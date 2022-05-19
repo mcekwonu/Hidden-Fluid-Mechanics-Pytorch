@@ -88,11 +88,7 @@ class CylinderResNetHFM(nn.Module):
         self.create_dir(f"../logs/{self.model_name}/results")
 
     def physics_constraints(self, x, y, t, Rex):
-        uvp = self.net_uvp(x, y, t)
-
-        u = uvp[:, 0].reshape(-1, 1)
-        v = uvp[:, 1].reshape(-1, 1)
-        p = uvp[:, 2].reshape(-1, 1)
+        u, v, p = self.net_uvp(x, y, t)
 
         u_t = compute_gradients(u, t)
         u_x = compute_gradients(u, x)
@@ -119,10 +115,7 @@ class CylinderResNetHFM(nn.Module):
         return nn.MSELoss(reduction="mean")(outputs, targets)
 
     def data_loss(self, x, y, t, u, v):
-        uvp_pred = self.net_uvp(x, y, t)
-
-        u_pred = uvp_pred[:, 0].reshape(-1, 1)
-        v_pred = uvp_pred[:, 1].reshape(-1, 1)
+        u_pred, v_pred, p_pred = self.net_uvp(x, y, t)
 
         u_loss = self.loss_fn(u_pred, u)
         v_loss = self.loss_fn(v_pred, v)
