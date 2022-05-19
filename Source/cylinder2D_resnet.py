@@ -489,8 +489,6 @@ class CylinderResNetHFM(nn.Module):
 
         time_span = np.linspace(start_time, end_time, n)
 
-        F_D, F_L = self.predict_drag_lift(t_cyl=t)
-
         for t_s in time_span:
             t_s = round(float(t_s), 3)
             idx_time = np.where(t == t_s)[0]
@@ -540,8 +538,7 @@ class CylinderResNetHFM(nn.Module):
 
         scipy.io.savemat(
             f"../logs/{self.model_name}/results/{self.model_name}_results_{time.strftime('%d_%m_%Y')}.mat",
-            {"U_pred": u_pred, "V_pred": v_pred, "P_pred": p_pred, "Vorticity_pred": vort_pred,
-             "F_D": F_D, "F_L": F_L}
+            {"U_pred": u_pred, "V_pred": v_pred, "P_pred": p_pred, "Vorticity_pred": vort_pred}
         )
 
     def plot_relative_error_in_time(self, params, time_snap, name="param"):
@@ -818,6 +815,6 @@ if __name__ == "__main__":
                   start_time=t_start, end_time=t_end, interval=interval, name="v", fps=5)
 
     del t_test, test_data
-
+    
     # Plot all losses and relative errors
     pinn.plot_loss()
