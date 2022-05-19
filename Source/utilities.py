@@ -221,8 +221,9 @@ class Neural_Net(nn.Module):
     def forward(self, x, y, t):
         X = torch.cat([x, y, t], dim=1).requires_grad_(True)
         out = self.base(X)
+        n = out.size(1)
 
-        return out
+        return torch.tensor_split(out, n, dim=1)
 
     @property
     def model_capacity(self):
@@ -231,7 +232,8 @@ class Neural_Net(nn.Module):
         num_layers = len(list(self.parameters()))
         print(f"\nNumber of layers: {num_layers}\n"
               f"Number of trainable parameters: {num_learnable_params}")
-
+        
+        return 
 
 class ResidualBlock(nn.Module):
     """Residual block class for the Residual Network"""
@@ -310,8 +312,9 @@ class ResNet(nn.Module):
     def forward(self, x, y, t):
         X = torch.cat([x, y, t], dim=1).requires_grad_(True)
         out = self.blocks(X)
+        n = out.size(1)
 
-        return out
+        return torch.tensor_split(out, n, dim=1)
 
     @property
     def model_capacity(self):
@@ -320,6 +323,8 @@ class ResNet(nn.Module):
         num_layers = len(list(self.parameters()))
         print(f"\nNumber of layers: {num_layers}\n"
               f"Number of trainable parameters: {num_learnable_params}")
+        
+        return
 
 
 class DenseResNet(nn.Module):
@@ -397,9 +402,7 @@ class DenseResNet(nn.Module):
 
     def forward(self, x, y, t):
         X = torch.cat([x, y, t], dim=1).requires_grad_(True)
-        # self.scaler.fit(X)
-        # X = self.scaler.transform(X)
-
+      
         if self.fourier_features:
             cosx = torch.cos(torch.matmul(X, self.B))
             sinx = torch.sin(torch.matmul(X, self.B))
@@ -413,8 +416,10 @@ class DenseResNet(nn.Module):
             for j in range(1, self.num_layers_per_block):
                 z = self.activation(self.beta[i][j] * self.resblocks[i][j](z))
                 X = z + X
+        out = self.last(X)
+        n = out.size(1)
 
-        return self.last(X)
+        return torch.tensor_split(out, n, dim=1)
 
     @property
     def model_capacity(self):
@@ -423,3 +428,5 @@ class DenseResNet(nn.Module):
         num_layers = len(list(self.parameters()))
         print(f"\nNumber of layers: {num_layers}\n"
               f"Number of trainable parameters: {num_learnable_params}")
+        
+        return
