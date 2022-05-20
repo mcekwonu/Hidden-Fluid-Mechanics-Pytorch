@@ -19,6 +19,6 @@ Sparse spatio and temporal data training are implemented respectively with the v
 
 - Raissi, Maziar, Alireza Yazdani, and George Em Karniadakis. ["Hidden Fluid Mechanics: A Navier-Stokes Informed Deep Learning Framework for Assimilating Flow Visualization Data." arXiv preprint arXiv:1808.04327 (2018).](https://arxiv.org/pdf/1808.04327.pdf)
 
-- Raissi, Maziar, and George Em Karniadakis. ["Hidden Physics Models: Machine Learning of Nonlinear Partial Differential Equations." arXiv preprint arXiv:1708.00588 (2017).] (https://arxiv.org/pdf/1708.00588.pdf)
+- Raissi, Maziar, and George Em Karniadakis. ["Hidden Physics Models: Machine Learning of Nonlinear Partial Differential Equations." arXiv preprint arXiv:1708.00588 (2017).](https://arxiv.org/pdf/1708.00588.pdf)
 
-- Raissi, Maziar, and George Em Karniadakis. "Hidden physics models: Machine learning of nonlinear partial differential equations." Journal of Computational Physics 357 (2018): 125-141.
+- Raissi, Maziar, and George Em Karniadakis. ["Hidden physics models: Machine learning of nonlinear partial differential equations." Journal of Computational Physics 357 (2018): 125-141.](https://www.researchgate.net/publication/318868462_Hidden_Physics_Models_Machine_Learning_of_Nonlinear_Partial_Differential_Equations)
