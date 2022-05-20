@@ -29,7 +29,7 @@ class CylinderResNetHFM(nn.Module):
         init_method (str): Weight initialization method. Default is `xavier_normal`
         _data : denotes training data (x_data, y_data, t_data, u_data, v_data)
         minmax: ndarray of minimum and maximum value of all training data
-        batch_size: batch size for training
+        batch_ratio: fraction of batch size for training
         lamda: regularization parameter for tuning PDE equation loss. Default is 1.0
         epochs: Number of epochs
         sample_epoch: Epoch to display training results
@@ -39,10 +39,11 @@ class CylinderResNetHFM(nn.Module):
 
     def __init__(self, layers_list, activation_name="sine", init_method="xavier_normal", 
                  nn_type="resnet", save_name=None, verbose=False, *,
-                 x_data, y_data, t_data, u_data, v_data, Re,
-                 minmax, lamda, epochs, sample_epoch, learning_rate):
+                 x_data, y_data, t_data, u_data, v_data, Re, minmax, 
+                 lamda, epochs, batch_ratio, sample_epoch, learning_rate):
         super().__init__()
-
+        
+        self.dims = layers_list[0]
         self.x_data = x_data
         self.y_data = y_data
         self.t_data = t_data
@@ -50,6 +51,7 @@ class CylinderResNetHFM(nn.Module):
         self.v_data = v_data
         self.Rex = Re
         self.lamda = lamda
+        self.ratio = batch_ratio
         self.minmax = minmax
         self.verbose = verbose
         self.num_epochs = epochs
@@ -104,7 +106,7 @@ class CylinderResNetHFM(nn.Module):
         u_yy = compute_gradients(u_y, y)
         v_xx = compute_gradients(v_x, x)
         v_yy = compute_gradients(v_y, y)
-         omega = v_x - u_y
+        omega = v_x - u_y
 
         e1 = u_t + (u * u_x + v * u_y) + p_x - (1. / Rex) * (u_xx + u_yy)
         e2 = v_t + (u * v_x + v * v_y) + p_y - (1. / Rex) * (v_xx + v_yy)
@@ -141,7 +143,7 @@ class CylinderResNetHFM(nn.Module):
             model_name = self.model_name
             losses = np.empty((0, 6), dtype=float)
             N_eqn = 1000000
-            dimensions = 3
+            dims = self.dims
 
             x_data, y_data, t_data, u_data, v_data, minmax = (self.x_data,
                                                               self.y_data,
@@ -158,12 +160,11 @@ class CylinderResNetHFM(nn.Module):
             X_shuffle = self.shuffle_batch(x_data, y_data, t_data, u_data, v_data)
             del minmax, x_data, y_data, t_data, u_data, v_data
 
-            ratio = 0.05  # changed from 0.02
-            batch_size_data = int(ratio * X_shuffle.shape[0])
-            batch_size_eqn = int(ratio * Eqn_points.shape[0])
+            batch_size_data = int(self.ratio * X_shuffle.shape[0])
+            batch_size_eqn = int(self.ratio * Eqn_points.shape[0])
             batch_iter = int(X_shuffle.size(0) / batch_size_data)
             eqn_iter = int(Eqn_points.size(0) / batch_size_eqn)
-            train_loss = []
+            epoch_loss = []
 
             start_time = time.time()
             for epoch in range(self.num_epochs):
@@ -211,7 +212,7 @@ class CylinderResNetHFM(nn.Module):
                     loss_eqn = self.equation_loss(x_eqn, y_eqn, t_eqn)
 
                     loss = loss_u + loss_v + self.lamda * loss_eqn
-                    train_loss.append(to_numpy(loss))
+                    epoch_loss.append(to_numpy(loss))
                     loss.backward()
                     self.optimizer.step()
 
@@ -256,8 +257,8 @@ class CylinderResNetHFM(nn.Module):
                 if epoch % self.interval == 0:
                     self.exact_and_predict_at_selected_time(self.selected_time, data_stack)
 
-            train_loss = np.array(train_loss).mean()
-            self.scheduler.step(train_loss)
+            epoch_loss = np.array(epoch_loss).mean()
+            self.scheduler.step(epoch_loss)
 
             elapsed = time.time() - start_time
             self.save_model(model=pinn_net, target_dir=f"../logs/{model_name}/model")
@@ -289,8 +290,8 @@ class CylinderResNetHFM(nn.Module):
         pinn_net.load_state_dict(checkpoint["state_dict"])
         self.optimizer.load_state_dict(checkpoint["optimizer_dict"])
         losses = np.empty((0, 6), dtype=float)
-        N_eqn = 1000000
-        dimensions = 3
+        N_eqn = 1_000_000
+        dims = self.dims
 
         x_data, y_data, t_data, u_data, v_data, minmax = (self.x_data,
                                                           self.y_data,
@@ -307,12 +308,11 @@ class CylinderResNetHFM(nn.Module):
         X_shuffle = self.shuffle_batch(x_data, y_data, t_data, u_data, v_data)
         del x_data, y_data, t_data, u_data, v_data, minmax
 
-        ratio = 0.05  # changed from 0.02
-        batch_size_data = int(ratio * X_shuffle.shape[0])
-        batch_size_eqn = int(ratio * Eqn_points.shape[0])
+        batch_size_data = int(self.ratio * X_shuffle.shape[0])
+        batch_size_eqn = int(self.ratio * Eqn_points.shape[0])
         batch_iter = int(X_shuffle.size(0) / batch_size_data)
         eqn_iter = int(Eqn_points.size(0) / batch_size_eqn)
-        train_loss = []
+        epoch_loss = []
 
         if restore_epoch < self.num_epochs:
             restore_epoch = self.num_epochs
@@ -366,7 +366,7 @@ class CylinderResNetHFM(nn.Module):
                 loss_eqn = self.equation_loss(x_eqn, y_eqn, t_eqn)
 
                 loss = loss_u + loss_v + self.lamda * loss_eqn
-                train_loss.append(to_numpy(loss))
+                epoch_loss.append(to_numpy(loss))
                 loss.backward()
 
                 self.optimizer.step()
@@ -405,8 +405,8 @@ class CylinderResNetHFM(nn.Module):
             if epoch % self.interval == 0:
                 self.exact_and_predict_at_selected_time(self.selected_time, data_stack)
 
-        train_loss = np.array(train_loss).mean()
-        self.scheduler.step(train_loss)
+        epoch_loss = np.array(epoch_loss).mean()
+        self.scheduler.step(epoch_loss)
 
         elapsed = time.time() - start_time
         self.save_model(model=pinn_net, target_dir=f"../logs/{model_name}/model")
@@ -770,6 +770,7 @@ if __name__ == "__main__":
                              lamda=LAMDA,
                              epochs=EPOCHS,
                              sample_epoch=100,
+                             batch_ratio=0.05,
                              save_name="Cylinder2D_Wake",
                              learning_rate=LEARNING_RATE,
                              verbsoe=False)
