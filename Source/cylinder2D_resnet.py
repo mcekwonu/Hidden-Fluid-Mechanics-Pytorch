@@ -104,11 +104,11 @@ class CylinderResNetHFM(nn.Module):
         u_yy = compute_gradients(u_y, y)
         v_xx = compute_gradients(v_x, x)
         v_yy = compute_gradients(v_y, y)
+         omega = v_x - u_y
 
         e1 = u_t + (u * u_x + v * u_y) + p_x - (1. / Rex) * (u_xx + u_yy)
         e2 = v_t + (u * v_x + v * v_y) + p_y - (1. / Rex) * (v_xx + v_yy)
-        e3 = u_x + v_y
-        omega = v_x - u_y
+        e3 = u_x + v_y    
 
         return u, v, p, omega, e1, e2, e3
 
