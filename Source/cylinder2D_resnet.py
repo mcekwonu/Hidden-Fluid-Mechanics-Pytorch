@@ -34,10 +34,11 @@ class CylinderResNetHFM(nn.Module):
         epochs: Number of epochs
         sample_epoch: Epoch to display training results
         save_name: Save model name. If None, the model name is automatically created from the class.
+        verbose: Display plot of predictions when True. Default is False.
     """
 
-    def __init__(self, layers_list, activation_name="sine",
-                 init_method="xavier_normal", nn_type="resnet", save_name=None, *,
+    def __init__(self, layers_list, activation_name="sine", init_method="xavier_normal", 
+                 nn_type="resnet", save_name=None, verbose=False, *,
                  x_data, y_data, t_data, u_data, v_data, Re,
                  minmax, lamda, epochs, sample_epoch, learning_rate):
         super().__init__()
@@ -50,6 +51,7 @@ class CylinderResNetHFM(nn.Module):
         self.Rex = Re
         self.lamda = lamda
         self.minmax = minmax
+        self.verbose = verbose
         self.num_epochs = epochs
         self.lr = learning_rate
         self.interval = sample_epoch
@@ -520,21 +522,21 @@ class CylinderResNetHFM(nn.Module):
                                                 min_value=min_data[0, 4],
                                                 max_value=max_data[0, 4],
                                                 name="v")
-            self.plot_relative_error_in_time(u_diff, t_s, name="u")
-            self.plot_relative_error_in_time(v_diff, t_s, name="v")
             self.plot_predicted_params_in_time(p_pred, t_s, name="p")
             self.plot_predicted_params_in_time(vort_pred, t_s, name="vorticity")
-
+            self.plot_relative_error_in_time(u_diff, t_s, name="u")
+            self.plot_relative_error_in_time(v_diff, t_s, name="v")      
+            
             del u_snap, v_snap, x_flatten, y_flatten, t_flatten
             del x_snap, y_snap, t_snap
             plt.close("all")
 
         scipy.io.savemat(
-            f"../logs/{self.model_name}/results/{self.model_name}_results_{time.strftime('%d_%m_%Y')}.mat",
-            {"U_pred": u_pred, "V_pred": v_pred, "P_pred": p_pred, "Vorticity_pred": vort_pred}
+            f"../logs/{self.model_name}/results/{self.model_name.lower()}_{time.strftime('%d_%m_%Y')}.mat",
+            {"U": u_pred, "V": v_pred, "P": p_pred, "Vorticity": vort_pred, "Time": t_s}
         )
 
-    def plot_relative_error_in_time(self, params, time_snap, name="param"):
+    def plot_relative_error_in_time(self, params, time_snap, name):
         save_dir = f"../logs/{self.model_name}/snapshots/relative_error"
         self.create_dir(save_dir)
 
@@ -544,14 +546,14 @@ class CylinderResNetHFM(nn.Module):
 
         plt.figure(figsize=(8, 6))
         plt.imshow(params, cmap="jet", norm=v_norm)
-        plt.title(f"Rel.error {name} (t = {time_snap:.2f}s)")
+        plt.title(f"Rel. error {name} (t = {time_snap:.2f}s)")
         plt.ylabel("y/D")
         plt.xlabel("x/D")
         plt.colorbar(shrink=0.8)
         plt.savefig(f"{save_dir}/{name}_{time_snap:.2f}.png")
         plt.close("all")
 
-    def plot_predicted_params_in_time(self, params, time_select, name="param"):
+    def plot_predicted_params_in_time(self, params, time_select, name):
         save_dir = f"../logs/{self.model_name}/snapshots/{name}"
         self.create_dir(save_dir)
 
@@ -609,9 +611,11 @@ class CylinderResNetHFM(nn.Module):
             plt.imshow(params_predict, cmap="jet")
             plt.title(f"Learned {name}(x, y) (t = {selected_time:.2f}s)")
             plt.colorbar(shrink=0.6)
-        # plt.show()  # Uncomment to display plot when training with spyder IDE
+        
+        if self.verbose:
+            plt.show()
 
-    def make_gif(self, input_dir, start_time, end_time, interval=0.1, name="param", fps=5):
+    def make_gif(self, input_dir, start_time, end_time, interval, name, fps=5):
         save_dir = f"../logs/{self.model_name}/animated_gif"
         self.create_dir(save_dir)
 
@@ -674,23 +678,23 @@ class CylinderResNetHFM(nn.Module):
         rel_u = losses[:, [4]]
         rel_v = losses[:, [5]]
 
-        plt.figure(figsize=(12, 10))
+        plt.figure(figsize=(10, 8))
         plt.semilogy(x, total_loss, color="red", label="Total loss")
-        plt.semilogy(x, loss_u, color="blue", label=r"$Loss_{u}$")
-        plt.semilogy(x, loss_v, color="green", label=r"$Loss_{v}$")
-        plt.semilogy(x, loss_eq, color="orange", label=r"$Loss_{PDE}$")
+        plt.semilogy(x, loss_u, color="blue", label=r"Loss ~u")
+        plt.semilogy(x, loss_v, color="green", label=r"Loss ~v")
+        plt.semilogy(x, loss_eq, color="orange", label=r"Loss~PDE")
         plt.ylabel("Loss")
         plt.xlabel("Epoch")
-        plt.legend(loc="upper center", frameon=False, ncol=4)
+        plt.legend(loc="upper right", frameon=False, ncol=1)
         plt.savefig(f"../logs/{self.model_name}/results/loss.png", dpi=600)
         plt.show()
 
-        plt.figure(figsize=(12, 10))
-        plt.plot(x, rel_u, color="orange", label=r"$L_{2} u(t, x, y)$")
-        plt.plot(x, rel_v, color="blue", label=r"$L_{2} v(t, x, y)$")
+        plt.figure(figsize=(10, 8))
+        plt.plot(x, rel_u, color="orange", label=r"$L_{2}$ ~u")
+        plt.plot(x, rel_v, color="blue", label=r"$L_{2}$ ~v")
         plt.ylabel(r"Rel. $L_{2}$ error")
         plt.xlabel("Epoch")
-        plt.legend(loc="upper center", frameon=False, ncol=2)
+        plt.legend(loc="upper right", frameon=False, ncol=1)
         plt.savefig(f"../logs/{self.model_name}/results/rel_err.png", dpi=600)
         plt.show()
 
@@ -747,15 +751,10 @@ if __name__ == "__main__":
     portion = 0.05
     x_train, y_train, t_train, u_train, v_train, minmax_train = read_data_portion(data_path, portion)
 
-    U_s = 0.069
-    D = 0.0168
-    nu = 1e-6
-    Re_D = (U_s * D) / nu
-
     layers = [3] + 10 * [4 * 5] + [3]
-    EPOCHS = 5000
+    EPOCHS = 20_000
     LAMDA = 1
-    LR = 1e-04
+    LEARNING_RATE = 1e-04
 
     pinn = CylinderResNetHFM(layers_list=layers,
                              activation_name="sine",
@@ -766,13 +765,14 @@ if __name__ == "__main__":
                              t_data=t_train,
                              u_data=u_train,
                              v_data=v_train,
-                             Re=Re_D,
+                             Re=1100,
                              minmax=minmax_train,
                              lamda=LAMDA,
                              epochs=EPOCHS,
                              sample_epoch=100,
                              save_name="Cylinder2D_Wake",
-                             learning_rate=LR)
+                             learning_rate=LEARNING_RATE,
+                             verbsoe=False)
 
     pinn._train()
 
