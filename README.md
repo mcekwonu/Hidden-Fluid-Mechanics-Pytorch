@@ -15,6 +15,6 @@ Sparse spatio and temporal data training are implemented respectively with the v
 ![vorticity](https://user-images.githubusercontent.com/17880412/168983999-24399b39-6c42-4961-aa9f-ccf94441cb5e.gif)
 
 # References:
-- Raissi, Maziar, and George Em Karniadakis. "Hidden Physics Models: Machine Learning of Nonlinear Partial Differential Equations." arXiv preprint arXiv:1708.00588 (2017).
+- Raissi, Maziar, and George Em Karniadakis. ["Hidden Physics Models: Machine Learning of Nonlinear Partial Differential Equations." arXiv preprint arXiv:1708.00588 (2017).](https://www.science.org/doi/full/10.1126/science.aaw4741)
 
-- Raissi, Maziar, and George Em Karniadakis. "Hidden physics models: Machine learning of nonlinear partial differential equations." Journal of Computational Physics 357 (2018): 125-141.
+- Raissi, Maziar, and George Em Karniadakis. ["Hidden physics models: Machine learning of nonlinear partial differential equations." Journal of Computational Physics 357 (2018): 125-141.](https://arxiv.org/abs/1808.04327)
