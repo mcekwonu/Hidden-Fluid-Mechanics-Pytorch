@@ -221,9 +221,8 @@ class Neural_Net(nn.Module):
     def forward(self, x, y, t):
         X = torch.cat([x, y, t], dim=1).requires_grad_(True)
         out = self.base(X)
-        n = out.size(1)
-
-        return torch.tensor_split(out, n, dim=1)
+        
+        return torch.tensor_split(out, out.size(1), dim=1)
 
     @property
     def model_capacity(self):
@@ -312,9 +311,8 @@ class ResNet(nn.Module):
     def forward(self, x, y, t):
         X = torch.cat([x, y, t], dim=1).requires_grad_(True)
         out = self.blocks(X)
-        n = out.size(1)
-
-        return torch.tensor_split(out, n, dim=1)
+        
+        return torch.tensor_split(out, out.size(1), dim=1)
 
     @property
     def model_capacity(self):
@@ -417,9 +415,8 @@ class DenseResNet(nn.Module):
                 z = self.activation(self.beta[i][j] * self.resblocks[i][j](z))
                 X = z + X
         out = self.last(X)
-        n = out.size(1)
-
-        return torch.tensor_split(out, n, dim=1)
+        
+        return torch.tensor_split(out, out.size(1), dim=1)
 
     @property
     def model_capacity(self):
