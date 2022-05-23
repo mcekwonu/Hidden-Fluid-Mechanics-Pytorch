@@ -765,7 +765,7 @@ if __name__ == "__main__":
                              t_data=t_train,
                              u_data=u_train,
                              v_data=v_train,
-                             Re=1100,
+                             Re=100,
                              minmax=minmax_train,
                              lamda=LAMDA,
                              epochs=EPOCHS,
