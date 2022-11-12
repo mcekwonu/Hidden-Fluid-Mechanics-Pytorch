@@ -750,7 +750,7 @@ class CylinderResNetHFM(nn.Module):
 
 
 if __name__ == "__main__":
-    data_path = "../data/cylinder_wake.mat"
+    data_path = "../Data/cylinder_wake.mat"
     portion = 0.05
     x_train, y_train, t_train, u_train, v_train, minmax_train = read_data_portion(data_path, portion)
 
@@ -812,8 +812,6 @@ if __name__ == "__main__":
                   start_time=t_start, end_time=t_end, interval=delta_t, name="u", fps=5)
     pinn.make_gif(input_dir=f"../logs/{pinn.model_name}/snapshots/relative_error",
                   start_time=t_start, end_time=t_end, interval=delta_t, name="v", fps=5)
-
-    # pinn.predict_drag_lift(t_cyl=t_train)
 
     # Plot all losses and relative errors
     pinn.plot_loss()
