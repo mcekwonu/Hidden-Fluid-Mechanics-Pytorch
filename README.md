@@ -6,7 +6,7 @@ Three variants of neural networks:
 - "resnet" - residual networks with skip connections and 
 - "Denseresnet" - residual network with implementation of fourier features. The denseresnet NN is not yet fully validated.
 
-The sine activation function is implemented with options of tanh and sigmoid linear activation functions respectively.
+The sine activation function is implemented with options of tanh and sigmoid linear (swish) activation functions respectively.
 
 Sparse spatio and temporal data training are implemented respectively with the velocity fields and predicted the pressure and vorticity.
 
